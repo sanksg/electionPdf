@@ -43,7 +43,7 @@ def main():
     lacListPage = scp.get_json_response(conf.lacListUrl, conf.districtLacParams, 1 )
     
     #Create a key file for mapping LAC names to filename
-    keyf = open("lacFileKey.txt", "w+")
+    keyf = open("lacFileKey.txt", "a")
     
     #Download each file in the LAC link list
     for lac in lacListPage['aaData']:
@@ -51,8 +51,8 @@ def main():
       lacName = lac[0]
       fileName = link.split('/')[-1]
       keyf.write("{},{}{}".format(lacName, fileName, "\n"))
-      scp.downloadFile(link, fileName)
-      time.sleep(2)
+#      scp.downloadFile(link, fileName)
+#      time.sleep(2)
 
     
   endtime = datetime.datetime.now()

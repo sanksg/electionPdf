@@ -58,34 +58,79 @@ def process_pdfs(pdfs):
         # Get # pages
         pages = get_num_pages(pdf)
         
+        
+        #Make sure that our conversion command didn't cause an exception; if they did, skip this pdf
+        conv_error = False
+        
         #Prepare and run the cmds
         cmds = []
+        #out captures the complete output 
         out = ""
+        
         # Go through a loop for each page in the pdf and the corresponding area
         for (pg, area) in zip([1,"2-"+str(pages-1)], [area1,area2]): 
             #Create the tabula command by combining the base command with page + area
             cmd = " ".join([tab_base_cmd, "-p", str(pg), "-a", area, pdf])            
-            #Run the command and process output
-            out += subprocess.check_output(cmd, universal_newlines=True)
-        
+
+            #Run the command and process output    
+            cmdOut = run_subprocess(cmd)
+            #Break in case the cmd was not successful
+            if cmdOut == None:
+              conv_error = True
+              break
+              
+            #Append the output to the out variable if successful
+            out += cmdOut
+
+        #Skip PDF if there was an error
+        if conv_error:
+          print("Skipping PDF ", pdf)
+          break
+      
+        #Processing the last page separately since it has multiple parts
         cmdlast1 = " ".join([tab_base_cmd, "-p", str(pages), "-a", area3, pdf])
-        last1out = subprocess.check_output(cmdlast1, universal_newlines=True)
+        
+        # Try running the command and break out of loop if not successful
+        last1out = run_subprocess(cmdlast1)
+        if last1out == None:
+          print("Skipping PDF ", pdf)
+          break
+        
+        #Append the output of the last page and add row names manually
         i = 0
         for line in last1out.strip().split("\n"):
           out += csv_last_rows[i] + "," + line + "\n"
           i += 1
         
+        #Now capture the candidate names line which is the last line on the last page
         cmdlast2 = " ".join([tab_base_cmd, "-p", str(pages), "-a", area4, pdf])
-        out += "\n" + "," + ",".join(subprocess.check_output(cmdlast2, universal_newlines=True).replace("\"","").split(","))
+        #Run the subprocess and check if successful
+        cmdlast2out = run_subprocess(cmdlast2)
+        #Skip PDF if there is an error in conversion
+        if cmdlast2out == None:
+          print("Skipping PDF ", pdf)
+          break
+
+        #Append final line to the out variable
+        out += "\n" + "," + ",".join(cmdlast2out.replace("\"","").split(","))
+
         
-        
-        # Write the output to the csv file
+        # Finally, write the output to the csv file
         out_fh.write(out)
             
-        # ToDo: Manage the last page separately
+          
     
-             
+def run_subprocess(cmd):
+  try:
+    cmdOut = subprocess.check_output(cmd, universal_newlines=True)
+  except BaseException as e:
+    print("\t**=> Exception while running subprocess\nCommand:{}\nError:{}".format(pdf,cmd,str(e)))
+    return None
+
+  return cmdOut
     
+  
+  
 def main():  
     pdfs = get_pdfs(".")
 #    pdfs = [os.path.join("074.pdf")]
