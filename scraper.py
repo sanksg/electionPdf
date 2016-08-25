@@ -76,6 +76,10 @@ class Scraper:
     curTry = 1
     while curTry <= maxTries:
       try:
+        if(self.debug):
+          print("**Trying URL**:", url)
+          print("Headers:", self.searchHeaders)
+          print("Params:", params)
         resp = self.s.get(url, headers=self.searchHeaders, params=params)
 
       except BaseException as e:
@@ -132,9 +136,18 @@ class Scraper:
       i += reqAmt
 
       time.sleep(sleepTime)
+      
 
-
-
-
+  def downloadFile(self, url, outName):
+    local_filename = outName
+    # NOTE the stream=True parameter
+    r = self.s.get(url, stream=True)
+    with open(local_filename, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024): 
+            if chunk: # filter out keep-alive new chunks
+                f.write(chunk)
+                #f.flush() commented by recommendation from J.F.Sebastian
+    return local_filename
+    
 
 

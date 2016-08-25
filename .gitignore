@@ -1,3 +1,10 @@
 *.csv
+*.pyc
+*.html
+*.jpg
+*.png
+*.gif
 *.pdf
 *.zip
+*.txt
+*.*~
