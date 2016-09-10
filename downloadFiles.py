@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup as BS
 
 def main():
 
+  DEBUG = True;
 #  while datetime.datetime.now().time() < datetime.time(2, 30):
 #    print "Sleeping for 300 secs"
 #    time.sleep(300)
@@ -49,10 +50,12 @@ def main():
     for lac in lacListPage['aaData']:
       link = BS(lac[1], "html.parser").a['href']
       lacName = lac[0]
-      fileName = link.split('/')[-1]
-      keyf.write("{},{}{}".format(lacName, fileName, "\n"))
-#      scp.downloadFile(link, fileName)
-#      time.sleep(2)
+      downFileName = link.split('/')[-1]
+      keyf.write("{},{}{}".format(lacName, downFileName, "\n"))
+      if DEBUG:
+        print("Downloading file ", downFileName)
+      scp.downloadFile(link, downFileName)
+      time.sleep(2)
 
     
   endtime = datetime.datetime.now()

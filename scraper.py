@@ -10,7 +10,8 @@ class Scraper:
     self.searchHeaders = searchHeaders
     self.setupUrlList = setupUrlList
     self.s = None
-    self.debug = True
+    self.DEBUG = True
+    self.DEBUGLEVEL = 1;
     
   def reset_session(self, url):
     try:
@@ -26,7 +27,7 @@ class Scraper:
 
     for url in self.setupUrlList:
       try:
-        if self.debug:
+        if self.DEBUG:
           print("Setup_Session: Getting URL ", url)
         urlOut = self.s.get(url)
 
@@ -47,7 +48,16 @@ class Scraper:
     while curTry <= maxTries:
       # Try to get a response
       try:
+        if self.DEBUG and self.DEBUGLEVEL > 1:
+          print("==Trying URL==:", url)
+          print("Headers:", self.searchHeaders)
+          print("Params:", params)
+        
         resp = self.get_response(url, params, maxTries)
+        
+        if self.DEBUG and self.DEBUGLEVEL > 1:
+          print("== Got Response ==\n", resp.text.encode('utf8'))
+
       except:
         print("\t**=> Exception in get_response() call")
         raise
@@ -76,11 +86,13 @@ class Scraper:
     curTry = 1
     while curTry <= maxTries:
       try:
-        if(self.debug):
-          print("**Trying URL**:", url)
+        if self.DEBUG and self.DEBUGLEVEL > 1:
+          print("==Trying URL==:", url)
           print("Headers:", self.searchHeaders)
           print("Params:", params)
         resp = self.s.get(url, headers=self.searchHeaders, params=params)
+        if self.DEBUG and self.DEBUGLEVEL > 1:
+          print("==Success==:\n", resp.text.encode('utf8'))
 
       except BaseException as e:
         sleepTime = random.uniform(3,6)*curTry

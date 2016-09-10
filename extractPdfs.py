@@ -28,6 +28,7 @@ area2 = "67.351,11.05,487.244,829.788" # Normal pages between 2 to end-1
 area3 = "67.351,61.563,329.389,828.735" # 1st half of last page
 area4 = "355.699,11.05,385.165,838.207" # last half of last page
 
+pdfFilesPath = "ge2014"
 
 def get_num_pages(pdf_fn):
     pdf = PdfFileReader(open(pdf_fn, 'rb'))
@@ -39,13 +40,13 @@ def get_pdfs(path):
     for fn in os.listdir(path):
         match = re.findall("\d+\\.pdf", fn)
         if match:
-            pdf_list.append(fn)
+            pdf_list.append(os.path.join(path,fn))
     return pdf_list
 
   
 
 
-def process_pdfs(pdfs):
+def process_pdfs(pdfs, outPath):
     for pdf in pdfs:
         print(pdf)
         # Output Csv
@@ -132,9 +133,9 @@ def run_subprocess(cmd):
   
   
 def main():  
-    pdfs = get_pdfs(".")
+    pdfs = get_pdfs(pdfFilesPath)
 #    pdfs = [os.path.join("074.pdf")]
-    process_pdfs(pdfs)
+    process_pdfs(pdfs, pdfFilesPath);
     
     
 if __name__=='__main__':

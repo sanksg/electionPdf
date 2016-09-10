@@ -1,8 +1,8 @@
 from urllib.parse import urljoin
 
 baseUrl = 'http://www.ceo.kerala.gov.in'
-detailResultsUrl = urljoin(baseUrl,'detailedResultsGE2016.html')
-lacListUrl = urljoin(baseUrl, 'generalelections/lacListAjax2016.html')
+detailResultsUrl = urljoin(baseUrl,'detailedResultsGE2014.html')
+lacListUrl = urljoin(baseUrl, 'generalelections/lacListAjax2014.html')
 
 
 districtLacParams = {
